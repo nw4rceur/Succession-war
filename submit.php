@@ -20,8 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         // Récupère le nom de l'image et la place dans un format sécurisé
-        $imageName = basename($_FILES['image']['name']);
+        // Création d'un nom de fichier unique basé sur le nom et prénom
+        $imageExtension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+        $imageName = preg_replace('/[^a-zA-Z0-9-_]/', '_', $nom . '_' . $prenom) . '.' . $imageExtension;
         $uploadFile = $uploadDir . $imageName;
+
 
         // Déplace l'image téléchargée dans le dossier "uploads"
         if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadFile)) {
