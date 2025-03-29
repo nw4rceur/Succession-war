@@ -82,6 +82,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         "name" => "🏠 • — Résidence :",
                         "value" => $lieu_residence,
                         "inline" => false
+                    ],
+                    [
+                        "name" => "🎭 • Demande de rôle particulier :",
+                        "value" => $role_particulier,
+                        "inline" => false
+                    ],
+                    [
+                        "name" => "📝 • Test RP :",
+                        "value" => $test_rp,
+                        "inline" => false
                     ]
                 ]
             ]
