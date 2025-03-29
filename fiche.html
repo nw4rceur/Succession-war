@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiche RP - Succession War</title>
+  <link rel="stylesheet" href="fiche.css">
+</head>
+<body>
+<header>
+  <h1>Succession War - Créer votre Fiche RP</h1>
+</header>
+
+<section class="form-container">
+  <form action="submit.php" method="POST" id="ficheForm" enctype="multipart/form-data">
+    <label for="nom">Nom:</label>
+    <input type="text" id="nom" name="nom" required><br><br>
+
+    <label for="prenom">Prénom:</label>
+    <input type="text" id="prenom" name="prenom" required><br><br>
+
+    <label for="age">Âge:</label>
+    <input type="number" id="age" name="age" required><br><br>
+
+    <label for="lieu_residence">Lieu de résidence:</label>
+    <select id="lieu_residence" name="lieu_residence" required>
+      <option value="Bzezerose">Bzezerose</option>
+      <option value="Sahelta">Sahelta</option>
+      <option value="Mimbo">Mimbo</option>
+      <option value="Kukanya">Kukanya</option>
+      <option value="Kakin">Kakin</option>
+    </select><br><br>
+
+    <label for="metier_grade">Métier / Grade:</label>
+    <select id="metier_grade" name="metier_grade" required>
+      <option value="Criminel">Criminel</option>
+      <option value="Scientifique">Scientifique</option>
+      <option value="Civil">Civil</option>
+      <option value="Chef d'entreprise">Chef d'entreprise</option>
+      <option value="Politicien">Politicien</option>
+    </select><br><br>
+
+    <div id="roleSection" class="hidden">
+      <label for="role_description">Demande de rôle particulier:</label>
+      <textarea id="role_description" name="role_description"></textarea><br><br>
+
+      <label for="action">Test RP:</label>
+      <textarea id="action" name="action"></textarea><br><br>
+
+      <label for="context">Contexte RP (aléatoire):</label>
+      <p id="context"></p><br>
+    </div>
+
+    <label for="image">Apparence du personnage (image):</label>
+    <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)"><br><br>
+
+    <div id="imagePreviewContainer" class="hidden">
+      <h3>Aperçu de votre image :</h3>
+      <img id="imagePreview" src="" alt="Aperçu de l'image" style="max-width: 200px; max-height: 200px;"/><br><br>
+    </div>
+
+    <input type="submit" value="Envoyer sa fiche">
+  </form>
+
+  <button id="roleButton">Demander un rôle particulier</button>
+
+  <!-- Nouveau bouton Accueil -->
+  <button id="homeButton" onclick="window.location.href='index.html'">Retour à l'Accueil</button>
+</section>
+
+<footer>
+  <p>&copy; 2025 Succession War RP </p>
+</footer>
+
+<script>
+  const roleButton = document.getElementById('roleButton');
+  const roleSection = document.getElementById('roleSection');
+  const contextElement = document.getElementById('context');
+  const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+  const imagePreview = document.getElementById('imagePreview');
+
+  // Liste des contextes RP inspirés de *Hunter x Hunter*
+  const contextes = [
+    "Vous vous réveillez dans la forêt dense de Sahelta, des bruits mystérieux résonnent autour de vous.",
+    "Sur les bords du fleuve de Bzezerose, un groupe d'explorateurs se prépare à traverser les eaux dangereuses.",
+    "Dans les ruines d'une ancienne civilisation à Mimbo, vous découvrez un artefact étrange qui émet une lueur inquiétante.",
+    "Dans l'Empire de Kakin, une guerre secrète fait rage entre les familles dirigeantes, et vous êtes au centre de cette lutte.",
+    "Le royaume de Kukanya organise une grande expédition vers une île inconnue, mais des rumeurs de créatures mortelles circulent."
+  ];
+
+  // Sélectionne un contexte aléatoire parmi la liste
+  function getRandomContext() {
+    const randomIndex = Math.floor(Math.random() * contextes.length);
+    contextElement.textContent = contextes[randomIndex];
+  }
+
+  // Afficher la section "Demande de rôle particulier" lorsqu'on clique sur le bouton
+  roleButton.addEventListener('click', function() {
+    roleSection.classList.toggle('hidden');
+    getRandomContext(); // Afficher un contexte aléatoire chaque fois que l'on clique
+  });
+
+  // Fonction pour prévisualiser l'image
+  function previewImage(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function() {
+      imagePreview.src = reader.result;
+      imagePreviewContainer.classList.remove('hidden');
+    }
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  }
+</script>
+
+</body>
+</html>
