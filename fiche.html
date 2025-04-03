@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fiche RP - Succession War</title>
   <link rel="stylesheet" href="fiche.css">
+  <style>
+    /* Réduire la taille des champs de texte */
+    textarea {
+      width: 100%;
+      height: 80px; /* Réduit la hauteur */
+      resize: none;
+    }
+  </style>
 </head>
 <body>
 <header>
@@ -12,7 +20,10 @@
 </header>
 
 <section class="form-container">
-  <form action="submit.php" method="POST" id="ficheForm" enctype="multipart/form-data">
+  <form id="ficheForm" action="" method="POST" enctype="multipart/form-data">
+    <label for="pseudo">Pseudo Discord:</label>
+    <input type="text" id="pseudo" name="pseudo" required><br><br>
+
     <label for="nom">Nom:</label>
     <input type="text" id="nom" name="nom" required><br><br>
 
@@ -40,79 +51,131 @@
       <option value="Politicien">Politicien</option>
     </select><br><br>
 
-    <div id="roleSection" class="hidden">
-      <label for="role_description">Demande de rôle particulier:</label>
-      <textarea id="role_description" name="role_description"></textarea><br><br>
+    <!-- Demande de rôle particulier -->
+    <label for="role_description">Demande de rôle particulier:</label>
+    <textarea id="role_description" name="role_description"></textarea><br><br>
 
-      <label for="action">Test RP:</label>
-      <textarea id="action" name="action"></textarea><br><br>
-
-      <label for="context">Contexte RP (aléatoire):</label>
-      <p id="context"></p><br>
-    </div>
+    <!-- Ambition -->
+    <label for="ambition">Ambition:</label>
+    <textarea id="ambition" name="ambition"></textarea><br><br>
 
     <label for="image">Apparence du personnage (image):</label>
-    <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)"><br><br>
-
-    <div id="imagePreviewContainer" class="hidden">
-      <h3>Aperçu de votre image :</h3>
-      <img id="imagePreview" src="" alt="Aperçu de l'image" style="max-width: 200px; max-height: 200px;"/><br><br>
-    </div>
+    <input type="file" id="image" name="image" accept="image/*"><br><br>
 
     <input type="submit" value="Envoyer sa fiche">
   </form>
 
-  <button id="roleButton">Demander un rôle particulier</button>
-
   <!-- Nouveau bouton Accueil -->
   <button id="homeButton" onclick="window.location.href='index.html'">Retour à l'Accueil</button>
+
+  <footer></footer>
 </section>
 
-<footer>
-</footer>
-
 <script>
-  const roleButton = document.getElementById('roleButton');
-  const roleSection = document.getElementById('roleSection');
-  const contextElement = document.getElementById('context');
-  const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-  const imagePreview = document.getElementById('imagePreview');
+  // Envoi du formulaire à Discord via un Webhook
+  document.getElementById('ficheForm').addEventListener('submit', function(e) {
+    e.preventDefault();
 
-  // Liste des contextes RP inspirés de *Hunter x Hunter*
-  const contextes = [
-    "Vous vous réveillez dans la forêt dense de Sahelta, des bruits mystérieux résonnent autour de vous.",
-    "Sur les bords du fleuve de Bezerose, un groupe d'explorateurs se prépare à traverser les eaux dangereuses.",
-    "Dans les ruines d'une ancienne civilisation à Mimbo, vous découvrez un artefact étrange qui émet une lueur inquiétante.",
-    "Dans l'Empire de Kakin, une guerre secrète fait rage entre les familles dirigeantes, et vous êtes au centre de cette lutte.",
-    "Le royaume de Kukanya organise une grande expédition vers une île inconnue, mais des rumeurs de créatures mortelles circulent."
-  ];
+    // Récupérer les données du formulaire
+    const formData = new FormData(this);
+    const pseudo = formData.get('pseudo');
+    const nom = formData.get('nom');
+    const prenom = formData.get('prenom');
+    const age = formData.get('age');
+    const lieu_residence = formData.get('lieu_residence');
+    const metier_grade = formData.get('metier_grade');
+    const role_description = formData.get('role_description');
+    const ambition = formData.get('ambition');
+    const imageFile = formData.get('image');
 
-  // Sélectionne un contexte aléatoire parmi la liste
-  function getRandomContext() {
-    const randomIndex = Math.floor(Math.random() * contextes.length);
-    contextElement.textContent = contextes[randomIndex];
-  }
+    // Construire le message à envoyer sur Discord
+    const messageContent = `
+𑁋 [ **@${pseudo}** ] : [ **\`Personnage RP - Succession War\`** ]
 
-  // Afficher la section "Demande de rôle particulier" lorsqu'on clique sur le bouton
-  roleButton.addEventListener('click', function() {
-    roleSection.classList.toggle('hidden');
-    getRandomContext(); // Afficher un contexte aléatoire chaque fois que l'on clique
+- [ " <:nomprnom:1351509411570384916> " ] **\`Nom: ${nom} ${prenom}\`**
+- [ " <:nomprnom:1351509411570384916> " ] **\`Âge: ${age}\`**
+- [ " <:rsidence:1351509414019993671> " ] **\`Lieu de Résidence: ${lieu_residence}\`**
+- [ " <:discourse:1264219048380600450> " ] **\`Métier/Grade: ${metier_grade}\`**
+- [ " ⭐ " ] **\`Rôle Particulier: ${role_description || 'Non spécifié'}\`**
+- [ " 🧿 " ] **\`Ambition: ${ambition || 'Non spécifiée'}\`**
+  `;
+
+    // URL du webhook Discord
+    const webhookUrl = 'https://discord.com/api/webhooks/1322557372605927424/FinjGogaXp7WtaSHPX9PqRloSRo_OrwywhO1_0jz8g3hZib2EevXuYY3cGO75-qAhzA-';
+
+    if (imageFile && imageFile.size > 0) {
+      // Si une image est fournie, envoyer d'abord le message puis l'image
+      const reader = new FileReader();
+      reader.readAsDataURL(imageFile);
+      reader.onload = function() {
+        // Envoyer d'abord le message texte
+        fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: messageContent
+          })
+        })
+                .then(() => {
+                  // Puis envoyer l'image
+                  const formDataImage = new FormData();
+                  formDataImage.append('file', imageFile);
+                  return fetch(webhookUrl, {
+                    method: 'POST',
+                    body: formDataImage
+                  });
+                })
+                .then(() => {
+                  // Enfin envoyer l'image séparatrice
+                  return fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      embeds: [{
+                        image: {
+                          url: 'https://media.discordapp.net/attachments/1264291676877225984/1351581040921280522/20250318_163945.png'
+                        }
+                      }]
+                    })
+                  });
+                })
+                .then(() => {
+                  alert('Fiche envoyée à Discord!');
+                })
+                .catch(error => {
+                  alert('Erreur lors de l\'envoi à Discord : ' + error);
+                  console.error('Erreur:', error);
+                });
+      };
+    } else {
+      // Si pas d'image, envoyer juste le message et l'image séparatrice
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: messageContent,
+          embeds: [{
+            image: {
+              url: 'https://media.discordapp.net/attachments/1264291676877225984/1351581040921280522/20250318_163945.png'
+            }
+          }]
+        })
+      })
+              .then(() => {
+                alert('Fiche envoyée à Discord!');
+              })
+              .catch(error => {
+                alert('Erreur lors de l\'envoi à Discord : ' + error);
+                console.error('Erreur:', error);
+              });
+    }
   });
-
-  // Fonction pour prévisualiser l'image
-  function previewImage(event) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = function() {
-      imagePreview.src = reader.result;
-      imagePreviewContainer.classList.remove('hidden');
-    }
-
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-  }
 </script>
 
 </body>
